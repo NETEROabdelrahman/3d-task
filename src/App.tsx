@@ -42,7 +42,7 @@ const App = () => {
   
   useEffect(() => {
     window.addEventListener("click", () => setShowContextMenu(false))
-    // window.addEventListener("mousemove",(e)=>console.log(calculateVmin(e.clientX)))
+     //window.addEventListener("mousemove",(e)=>console.log(calculateVminX(e.clientY)))
   }, [])
 
   const handleLevelClick = (level: number, e: React.MouseEvent<HTMLDivElement>) => {
@@ -83,14 +83,13 @@ const App = () => {
 
   const handleLevelContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
+    console.log(e.currentTarget.getBoundingClientRect())
     setShowContextMenu(true);
     const levelMenuRefCurrent = levelMenuRef.current as HTMLDivElement
     const clickX = e.clientX;
     const clickY = e.clientY;
-    console.log(clickX)
-    console.log(calculateVmin(clickX))
-    console.log(clickY)
-    console.log(calculateVmin(clickY))
+    // console.log(calculateVminX(clickX))
+    // console.log(calculateVminY(clickY))
     const screenW = window.innerWidth;
     const screenH = window.innerHeight;
     const rootW: number = levelMenuRef.current?.offsetWidth ?? 0
@@ -118,14 +117,24 @@ const App = () => {
       levelMenuRefCurrent.style.top = `${clickY - rootH}px`;
     }
 
-    setPin({ style: { left: calculateVmin(clickX), top: calculateVmin(clickY) } });
+    setPin({ style: { left: calculateVminX(clickX,e.currentTarget.getBoundingClientRect().x,e.currentTarget.getBoundingClientRect().width), top: calculateVminY(clickY,e.currentTarget.getBoundingClientRect().y,e.currentTarget.getBoundingClientRect().height) } });
   };
  
 
-  const calculateVmin = (px: number) => {
+  const calculateVminX = (px: number,x:number,w:number) => {
     let percentage = 0;
-    percentage = Math.ceil((px / window.innerWidth) * 100)
-    return `${percentage}vmin`
+    let Xpercentage = 0;
+    percentage = Math.ceil((px /window.innerWidth) * 100)
+    Xpercentage = Math.ceil((x /window.innerWidth) * 100)
+    return `${(percentage-Xpercentage)*(window.innerWidth*0.96/(w)) }vmin`
+  };
+  
+  const calculateVminY = (px: number,y:number,h:number) => {
+    let percentage = 0;
+    let Ypercentage = 0;
+    percentage = Math.ceil((px /window.innerHeight) * 100)
+    Ypercentage = Math.ceil((y /window.innerHeight) * 100)
+    return `${(percentage-Ypercentage)*(window.innerHeight*0.65/(h)) }vmin`
   };
 
   const handleAddPinClick = () => {
